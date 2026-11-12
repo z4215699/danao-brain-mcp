@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.z4215699/danao-brain",
+  "title": "danao 智能组织大脑",
+  "description": "Governed autonomous-agent platform: HITL approvals, budget gates, hash-chained audit with daily Ed25519 tail signatures, golden-case regression, effect ledger (cost paired with success rate). MCP tool surface: knowledge base search/QA/ingest, cross-project capability registry with async approval for high-risk calls.",
+  "repository": {
+    "url": "https://github.com/z4215699/danao-brain-mcp",
+    "source": "github"
+  },
+  "version": "0.5.4",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://danao.tongqiansuanzhi.com/mcp"
+    }
+  ]
+}
