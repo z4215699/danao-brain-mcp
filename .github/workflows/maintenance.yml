@@ -1,0 +1,53 @@
+name: daily-maintenance
+on:
+  schedule:
+    - cron: "0 1 * * *"   # UTC 01:00 = 北京 09:00
+  workflow_dispatch:
+permissions:
+  contents: write          # 版本同步需写 server.json
+  id-token: write          # OIDC → registry 发布
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read production version
+        id: prod
+        run: |
+          V=$(curl -sf -m 20 https://danao.tongqiansuanzhi.com/api/version | grep -oP '"version":"\K[^"]+' || echo "")
+          echo "prod=$V" >> "$GITHUB_OUTPUT"
+          [ -n "$V" ] || { echo "danao /api/version 不可达"; exit 1; }
+      - name: Sync server.json version if drifted
+        id: sync
+        run: |
+          CUR=$(grep -oP '"version":\s*"\K[^"]+' server.json | head -1)
+          PROD="${{ steps.prod.outputs.prod }}"
+          if [ "$CUR" != "$PROD" ]; then
+            python3 - "$PROD" <<'PY'
+            import json, sys
+            d = json.load(open("server.json", encoding="utf-8"))
+            d["version"] = sys.argv[1]
+            open("server.json", "w", encoding="utf-8").write(json.dumps(d, ensure_ascii=False, indent=2) + "\n")
+            PY
+            git config user.name "maintenance-bot"
+            git config user.email "z4215699@users.noreply.github.com"
+            git add server.json
+            git commit -m "chore: sync server.json version -> $PROD (production drifted)"
+            git push
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Republish if drifted
+        if: steps.sync.outputs.published == 'true'
+        run: |
+          curl -sL https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz -o pub.tar.gz
+          tar -xzf pub.tar.gz mcp-publisher && chmod +x mcp-publisher
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish server.json
+      - name: Health checks (livez / agent-card / registry entry)
+        run: |
+          curl -sf -m 20 https://danao.tongqiansuanzhi.com/livez > /dev/null || { echo "livez DOWN"; exit 1; }
+          curl -sf -m 20 https://danao.tongqiansuanzhi.com/.well-known/agent-card.json | grep -q '"name":"danao-brain"' || { echo "agent-card 异常"; exit 1; }
+          curl -sf -m 20 "https://registry.modelcontextprotocol.io/v0/servers?search=danao" | grep -q "io.github.z4215699/danao-brain" || { echo "registry 条目缺失"; exit 1; }
+          echo "OK: livez / agent-card / registry entry 全绿"
