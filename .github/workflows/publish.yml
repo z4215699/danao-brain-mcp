@@ -1,0 +1,22 @@
+name: publish-mcp-registry
+on:
+  workflow_dispatch:
+  push:
+    paths: [server.json]
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write      # OIDC → registry 命名空间所有权验证（io.github.z4215699）
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mcp-publisher
+        run: |
+          curl -sL https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz -o pub.tar.gz
+          tar -xzf pub.tar.gz mcp-publisher
+          chmod +x mcp-publisher
+      - name: Login (github-oidc)
+        run: ./mcp-publisher login github-oidc
+      - name: Publish server.json
+        run: ./mcp-publisher publish server.json
