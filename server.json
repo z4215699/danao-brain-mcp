@@ -7,7 +7,7 @@
     "url": "https://github.com/z4215699/danao-brain-mcp",
     "source": "github"
   },
-  "version": "0.5.4",
+  "version": "0.5.10",
   "remotes": [
     {
       "type": "streamable-http",
