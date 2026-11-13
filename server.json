@@ -1,17 +1,17 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.z4215699/danao-brain",
-  "title": "danao 智能组织大脑",
-  "description": "Governed autonomous-agent platform: HITL approvals, budget gates, audit chain, effect ledger.",
-  "repository": {
-    "url": "https://github.com/z4215699/danao-brain-mcp",
-    "source": "github"
-  },
-  "version": "0.5.12",
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://danao.tongqiansuanzhi.com/mcp"
-    }
-  ]
+ "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+ "name": "io.github.z4215699/danao-brain",
+ "title": "danao 智能组织大脑",
+ "description": "Governed autonomous-agent platform: HITL approvals, budget gates, audit chain, effect ledger.",
+ "repository": {
+  "url": "https://github.com/z4215699/danao-brain-mcp",
+  "source": "github"
+ },
+ "version": "0.5.15",
+ "remotes": [
+  {
+   "type": "streamable-http",
+   "url": "https://danao.tongqiansuanzhi.com/mcp"
+  }
+ ]
 }
