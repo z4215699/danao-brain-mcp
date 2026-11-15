@@ -1,7 +1,7 @@
 name: daily-maintenance
 on:
   schedule:
-    - cron: "0 1 * * *"   # UTC 01:00 = 北京 09:00
+    - cron: "0 * * * *"   # 每小时整点：他席发版节奏快（日均 10+ 版），每日一层滞后过大；无漂移时幂等零成本（只读+健康核验）
   workflow_dispatch:
 permissions:
   contents: write          # 版本同步需写 server.json
